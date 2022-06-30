@@ -17,4 +17,14 @@ impl Server {
         let gate = Gate::new(addr,kind,&p);
         Server { p, events , gate }
     }
+
+    pub fn start(&mut self) {
+        loop {
+            self.p.poll(&mut self.events, None).unwrap();
+            for event in self.events.iter() {
+                self.gate.process(event,&self.p);
+            }
+            //self.gate.hub.update_working_count();
+        }
+    }
 }

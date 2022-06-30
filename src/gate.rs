@@ -1,11 +1,16 @@
-use mio::{net::TcpListener, Poll, Token, Interest};
+use std::io::ErrorKind;
+
+use mio::{net::TcpListener, Poll, Token, Interest, event::Event};
 
 use crate::log::Log;
 
 use self::{hub::line_head::{LineType, LogTag}, hub_head::Hub};
 
+
 pub mod hub;
+mod call_hub;
 pub mod hub_head;
+
 
 const LISTENER: Token = Token(0);
 
@@ -23,5 +28,32 @@ impl Gate {
         let str = format!("gate({:?}) listening on {} waiting for connections...",front_type,addr);
         Log::add(str, front_type,&LogTag::Default);
         Gate{ listener,front_type,hub:Hub::new(LogTag::Default as u64) }
+    }
+
+    pub fn process(&mut self, event:&Event,p:&Poll) {
+        match event.token() {
+            LISTENER => { self.on_listener_event(event,p); }
+            _ => { self.hub.process(event,p); }
+        }
+    }
+}
+
+impl Gate {
+    fn on_listener_event(&mut self, event:&Event,p:&Poll) {
+        Log::add(format!("{:?}",event), LineType::Defalut, &LogTag::Event);        
+        
+        if event.is_error() { panic!(); }
+
+        loop {
+            match self.listener.accept() {
+                Ok((socket, _)) => {
+                    self.hub.new_line(socket,p,self.front_type);
+                }
+                    
+                Err(err) if err.kind() == ErrorKind::WouldBlock => { break; }
+                
+                _ => { panic!(); }
+            }
+        }
     }
 }
