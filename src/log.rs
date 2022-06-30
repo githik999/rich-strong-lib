@@ -47,6 +47,12 @@ impl Log {
         String::from("log/panic.log")
     }
 
+    pub fn error(str:String) {
+        let s = format!("{}|{}\n",Time::now(),str);
+        let mut f = File::options().append(true).open(Log::error_file()).unwrap();
+        f.write(s.as_bytes()).unwrap();
+    }
+    
     pub fn error_file() -> String {
         String::from("log/error.log")
     }

@@ -27,4 +27,9 @@ impl Server {
             //self.gate.hub.update_working_count();
         }
     }
+
+    pub fn init(&mut self) {
+        self.gate.hub.init_callers(&self.p);
+    }
+
 }

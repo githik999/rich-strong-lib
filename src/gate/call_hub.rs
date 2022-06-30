@@ -9,6 +9,11 @@ use super::{hub_head::Hub, hub::line_head::{LineAge,Status::Dead}};
 ///Caller Hub
 
 impl Hub {
+    pub fn init_callers(&mut self,p:&Poll) {
+        let n = Config::minimum_worker();
+        self.add_caller(n,p);
+    }
+
     pub fn old_check(&mut self) {
         let mut old = Vec::new();
         let mut young = VecDeque::new();

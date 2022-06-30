@@ -77,6 +77,7 @@ impl Config {
     }
 
     pub fn set_minimum_worker(n:u8) {
+        assert!(n < u8::MAX/4);
         unsafe{ MININUM_WORKER = n; }
     }
 

@@ -22,11 +22,19 @@ pub struct Gate {
 impl Gate {
     pub fn new(addr:String,front_type:LineType,p:&Poll) -> Gate {
         let addr = addr.parse().unwrap();
-        let mut listener = TcpListener::bind(addr).unwrap();
-        p.registry().register(&mut listener, LISTENER, Interest::READABLE).unwrap();
-        let str = format!("gate({:?}) listening on {} waiting for connections...",front_type,addr);
-        Log::add(str, front_type,&LogTag::Default);
-        Gate{ listener,front_type,hub:Hub::new(LogTag::Default as u64) }
+        match TcpListener::bind(addr) {
+            Ok(mut listener) => {
+                p.registry().register(&mut listener, LISTENER, Interest::READABLE).unwrap();
+                let str = format!("gate({:?}) listening on {} waiting for connections...",front_type,addr);
+                Log::add(str, front_type,&LogTag::Default);
+                Gate{ listener,front_type,hub:Hub::new(LogTag::Default as u64) }
+            }
+
+            Err(err) => {
+                Log::error(format!("{}|{:?}",addr,err));
+                panic!();
+            }
+        }
     }
 
     pub fn process(&mut self, event:&Event,p:&Poll) {
