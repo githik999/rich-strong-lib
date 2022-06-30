@@ -63,7 +63,7 @@ impl Hub {
         id
     }
 
-    pub fn dead_pair(&mut self,k:&Token) {
+    pub fn kill_both(&mut self,k:&Token) {
         let pid = self.get_line(k).partner_id();
         self.kill_line_by_id(pid);
         self.kill_line(k);

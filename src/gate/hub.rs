@@ -1,12 +1,13 @@
 use mio::{event::Event, Poll, Token};
 
-use crate::{log::Log, head::{LogTag, LineType}};
+use crate::{head::{LogTag, LineType}, tcp::Tcp, log::Log};
 
 use super::hub_head::Hub;
 
 pub mod line_head;
 mod fox;
 mod line;
+mod operator;
 mod line_process;
 
 impl Hub {
@@ -20,7 +21,7 @@ impl Hub {
 
         if event.is_error() {
             self.get_mut_line(k).on_error();
-            self.dead_pair(k);
+            self.kill_both(k);
             return;
         }
         
@@ -38,7 +39,7 @@ impl Hub {
 
         if event.is_read_closed() {
             self.get_mut_line(k).read_closed();
-            self.dead_pair(k);
+            self.kill_both(k);
         }
 
     }
@@ -59,7 +60,7 @@ impl Hub {
         match line.kind() {
             LineType::Fox => {self.process_fox(k,buf,p);}
             //LineType::Http => {self.process_http(k,buf);}
-            //LineType::Operator => {self.process_operator(k,buf,p);}
+            LineType::Operator => {self.process_operator(k,buf,p);}
             _ => { self.tunnel(pid, buf); }
         }
     }
@@ -82,6 +83,45 @@ impl Hub {
             _ => { }
         }
     }
+
+    fn process_operator(&mut self,k:&Token,buf:Vec<u8>,p:&Poll) {
+        let line = self.get_mut_line(k);
+        let operator_id = line.id();
+        let spider_id = line.partner_id();
+        if spider_id > 0 {
+            self.tunnel(spider_id,buf);
+            return;
+        }
+
+        match line.decrypt_sni(&buf) {
+            Some(data) => {
+                let host = line.host().clone();
+                let id = self.create_spider(host,operator_id,p);
+                if id > 0 {
+                    self.get_mut_line(k).set_partner_id(id);
+                    self.get_mut_line_by_id(id).add_queue(data);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn create_spider(&mut self,host:String,operator_id:u64,p:&Poll) -> u64 {
+        match Tcp::connect(&host) {
+            Some(stream) => {
+                let id = self.new_line(stream,p,LineType::Spider);
+                let spider = self.get_mut_line_by_id(id);
+                spider.set_partner_id(operator_id);
+                spider.set_host(host,0);
+                return id;
+            }
+            None => {
+                Log::add(format!("create_spider fail|{}|{}",host,operator_id), LineType::Spider, &LogTag::Unexpected);
+            }
+        }
+        0
+    }
+
 
     fn tunnel(&mut self,pid:u64,data:Vec<u8>) {
         assert!(pid > 0);
