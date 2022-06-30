@@ -1,6 +1,6 @@
 [package]
 name = "rich-strong-lib"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "a Rust lib for rich-strong client and server"
 license = "GPL-3.0"
