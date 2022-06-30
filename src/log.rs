@@ -7,6 +7,15 @@ use crate::{config::Config, time::Time, head::{LineType, LogTag}};
 pub struct Log;
 
 impl Log {
+    pub fn create_log_dir() {
+        let path = "log";
+        match fs::remove_dir_all(path) {
+            _ => { fs::create_dir(path).unwrap(); }
+        }
+        File::create(Log::panic_file()).unwrap();
+        File::create(Log::error_file()).unwrap();
+    }
+
     pub fn create_dir(kind:LineType) {
         if Config::log_off() { return; }
         let path = format!("log/{:?}",kind);
@@ -33,6 +42,15 @@ impl Log {
         let mut f = File::options().append(true).open(path).unwrap();
         f.write(s.as_bytes()).unwrap();
     }
+
+    pub fn panic_file() -> String {
+        String::from("log/panic.log")
+    }
+
+    pub fn error_file() -> String {
+        String::from("log/error.log")
+    }
+    
 }
 
 impl Log {

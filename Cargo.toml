@@ -10,3 +10,5 @@ license = "GPL-3.0"
 mio = {version = "0.8.4",features = ["os-poll", "net"]}
 enum-iterator = "1.1.2"
 sni_shuffle = "0.1"
+configparser = "3.0.0"
+backtrace = "0.3"
