@@ -2,9 +2,9 @@ use std::collections::{HashMap, VecDeque};
 
 use mio::{Token, net::TcpStream, Poll, Interest};
 
-use crate::{config::Config, log::Log};
+use crate::{config::Config, log::Log, head::{LineType, LogTag}};
 
-use super::hub::line_head::{Line, LineType, LogTag};
+use super::hub::line_head::Line;
 
 pub struct Hub {
     key:u64,

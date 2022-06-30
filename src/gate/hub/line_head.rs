@@ -1,10 +1,9 @@
 use std::io::{Write, ErrorKind};
 
-use enum_iterator::Sequence;
 use mio::net::TcpStream;
 
-use crate::{log::Log, time::Time};
-use Status::{Baby,Working,Dead};
+use crate::{log::Log, time::Time, head::{LineType, LogTag}};
+use Status::{Baby,Dead};
 
 #[derive(Debug,Clone,Copy,PartialEq,PartialOrd)]
 pub enum Status {
@@ -13,25 +12,7 @@ pub enum Status {
     Dead,
 }
 
-#[derive(Debug,Clone,Copy,PartialEq,Sequence)]
-pub enum LineType {
-    Fox,
-    Caller,
-    Operator,
-    Spider,
-    Http,
-    Defalut,
-}
 
-#[derive(Debug,Sequence)]
-pub enum LogTag {
-    Unique,
-    Event,
-    Establish,
-    GoodBye,
-    Unexpected,
-    Default,
-}
 
 #[derive(Debug)]
 pub struct  Line {

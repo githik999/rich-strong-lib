@@ -1,8 +1,6 @@
 use mio::{event::Event, Poll, Token};
 
-use crate::log::Log;
-
-use self::line_head::{LogTag, LineType};
+use crate::{log::Log, head::{LogTag, LineType}};
 
 use super::hub_head::Hub;
 

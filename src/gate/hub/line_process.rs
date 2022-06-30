@@ -1,6 +1,6 @@
-use crate::log::Log;
+use crate::{log::Log, head::LogTag};
 
-use super::line_head::{Line, LogTag, Status};
+use super::line_head::{Line,Status};
 use Status::Working;
 
 impl Line {

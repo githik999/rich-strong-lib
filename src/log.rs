@@ -3,7 +3,7 @@ use std::{fs::{File, self}, io::Write};
 
 use enum_iterator::all;
 
-use crate::{gate::hub::line_head::{LineType, LogTag}, config::Config, time::Time};
+use crate::{config::Config, time::Time, head::{LineType, LogTag}};
 pub struct Log;
 
 impl Log {

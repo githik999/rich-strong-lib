@@ -2,9 +2,9 @@ use std::collections::VecDeque;
 
 use mio::{Poll, net::TcpStream};
 
-use crate::{time::Time, log::Log, config::Config};
+use crate::{time::Time, log::Log, config::Config, head::{LineType, LogTag}};
 
-use super::{hub_head::Hub, hub::line_head::{LineAge, LogTag, LineType, Status::Dead}};
+use super::{hub_head::Hub, hub::line_head::{LineAge,Status::Dead}};
 
 ///Caller Hub
 

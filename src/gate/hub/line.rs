@@ -2,9 +2,9 @@ use std::{net::Shutdown, io::{Read, ErrorKind}};
 
 use mio::event::Event;
 
-use crate::{log::Log, time::Time};
+use crate::{log::Log, time::Time, head::LogTag};
 
-use super::line_head::{Line, LogTag, Status};
+use super::line_head::{Line,Status};
 use Status::{Working,Dead};
 
 impl Line {

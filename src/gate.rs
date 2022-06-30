@@ -2,10 +2,9 @@ use std::io::ErrorKind;
 
 use mio::{net::TcpListener, Poll, Token, Interest, event::Event};
 
-use crate::log::Log;
+use crate::{log::Log, head::{LineType, LogTag}};
 
-use self::{hub::line_head::{LineType, LogTag}, hub_head::Hub};
-
+use self::hub_head::Hub;
 
 pub mod hub;
 mod call_hub;
