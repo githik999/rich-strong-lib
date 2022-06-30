@@ -11,6 +11,7 @@ use super::{hub_head::Hub, hub::line_head::{LineAge,Status::Dead}};
 impl Hub {
     pub fn init_callers(&mut self,p:&Poll) {
         let n = Config::minimum_worker();
+        assert!(n > 0);
         self.add_caller(n,p);
     }
 

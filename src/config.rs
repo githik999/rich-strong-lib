@@ -13,25 +13,24 @@ static mut WORKING_CALLER: u8 = 0;
 static mut PROXY_SERVER_ADDR : String = String::new();
 
 impl Config {
-    pub fn init() {
+    pub fn init() -> (String,String) {
         Config::set_panic_hook();
         let r = Config::load();
-        let n:u8 = r.getuint("other","minimum_worker").unwrap().unwrap() as u8;
-        let addr = r.get("server","addr").unwrap();
-        let write_log = r.getbool("other", "write_log").unwrap().unwrap();
-        
+        let app = r.get("common","app").unwrap();
+        let http = r.get("common","http").unwrap();
+        let write_log = r.getbool("common", "write_log").unwrap().unwrap();
         if write_log {
             Config::turn_on()
         }
-        Config::set_minimum_worker(n);
-        Config::set_proxy_server_addr(addr);
+        (app,http)
     }
 
-    pub fn get_listen_addr() -> (String,String) {
+    pub fn init_client_side_setting() {
         let r = Config::load();
-        let app = r.get("listen","app").unwrap();
-        let http = r.get("listen","http").unwrap();
-        (app,http)
+        let n:u8 = r.getuint("client","minimum_worker").unwrap().unwrap() as u8;
+        let addr = r.get("client","proxy_server_addr").unwrap();
+        Config::set_minimum_worker(n);
+        Config::set_proxy_server_addr(addr);
     }
 
     
