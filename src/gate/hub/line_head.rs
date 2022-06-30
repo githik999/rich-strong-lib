@@ -18,6 +18,16 @@ pub enum LineType {
     Defalut,
 }
 
+#[derive(Debug,Sequence)]
+pub enum LogTag {
+    Unique,
+    Event,
+    Establish,
+    GoodBye,
+    Unexpected,
+    Default,
+}
+
 #[derive(Debug)]
 pub struct  Line {
     id:u64,
