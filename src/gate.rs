@@ -48,8 +48,6 @@ impl Gate {
 
 impl Gate {
     fn on_listener_event(&mut self, event:&Event,p:&Poll) {
-        Log::add(format!("{:?}",event), LineType::Defalut, &LogTag::Event);        
-        
         if event.is_error() { panic!(); }
 
         loop {

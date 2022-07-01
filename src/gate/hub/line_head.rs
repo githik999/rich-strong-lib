@@ -23,6 +23,7 @@ pub struct  Line {
     kind:LineType,
     queue:Vec<u8>,
     stage:u8,
+    traffic:usize,
     host:String,
     read_close:bool,
     write_close:bool,
@@ -66,6 +67,10 @@ impl Line {
         self.stage
     }
 
+    pub fn traffic(&self) -> usize {
+        self.traffic
+    }
+
     pub fn host(&self) -> &String {
         &self.host
     }
@@ -86,7 +91,7 @@ impl Line {
     pub fn new(id:u64,stream:TcpStream,kind:LineType) -> Line {
         Log::new(kind,&id);
         Log::add(format!("{:?}",stream), kind, &id);
-        Line{ id,stream,kind,partner_id:0,status:Baby,queue:Vec::new(),stage:0,
+        Line{ id,stream,kind,partner_id:0,status:Baby,queue:Vec::new(),stage:0,traffic:0,
             host:String::from(""),read_close:false,write_close:false,born:Time::now() }
     }
 
@@ -116,6 +121,10 @@ impl Line {
         self.stage = self.stage + 1;
     }
 
+    pub fn add_traffic(&mut self,n:usize) {
+        self.traffic += n
+    }
+
     pub fn set_host(&mut self,str:String,tag:u64) {
         Log::add(format!("{}|{}|{}",self.id,str,tag), self.kind, &LogTag::Establish);
         self.log(format!("h|{}",str));
@@ -137,6 +146,7 @@ impl Line {
         match  self.stream.write(&self.queue) {
             Ok(n) => { 
                 self.log(format!("w|{}",n));
+                self.add_traffic(n);
                 self.shrink_queue(n);
             }
             Err(err) => {

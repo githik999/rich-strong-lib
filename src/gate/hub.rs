@@ -23,6 +23,11 @@ impl Hub {
             self.kill_both(k);
             return;
         }
+
+        if event.is_read_closed() && event.is_write_closed() {
+            self.kill_both(k);
+            return;
+        }
         
         if event.is_writable() {
             self.get_mut_line(k).on_writable();

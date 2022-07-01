@@ -14,8 +14,8 @@ impl Line {
         self.set_partner_id(0);
         self.set_status(Dead);
         let t = Time::now() - self.born_time();
-        self.log(format!("die|{}",t));
-        Log::add(format!("{}|{}|{}",self.id(),self.host(),t), self.kind(), &LogTag::GoodBye);
+        self.log(format!("die|{}ms|{}bytes",t,self.traffic()));
+        Log::add(format!("{}|{}|{}ms|{}bytes",self.id(),self.host(),t,self.traffic()), self.kind(), &LogTag::GoodBye);
     }
     
     pub fn event_after_die(&self,e:&Event) {
@@ -73,10 +73,10 @@ impl Line {
     fn shutdown_stream(&mut self) {
         if self.status() != Working { return; }
         match self.stream().shutdown(Shutdown::Both) {
-            Ok(_) => {}
             Err(err) => {
                 self.log(format!("shutdown_stream fail|{}",err));
             }
+            _ => {}
         }
     }
 }
