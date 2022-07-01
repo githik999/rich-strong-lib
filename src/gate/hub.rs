@@ -72,6 +72,7 @@ impl Hub {
     fn process_fox(&mut self,k:&Token,buf:Vec<u8>,p:&Poll) {
         let line = self.get_mut_line(k);
         let fox_id = line.id();
+        let host = line.host().clone();
         let mut caller_id = line.partner_id();
         
         match line.fox_data(buf) {
@@ -80,6 +81,7 @@ impl Hub {
                     self.check(p);
                     caller_id = self.idle_caller();
                     self.get_mut_line_by_id(caller_id).set_partner_id(fox_id);
+                    self.get_mut_line_by_id(caller_id).set_host(host, fox_id);
                     self.get_mut_line(k).set_partner_id(caller_id);
                 }
                 self.tunnel(caller_id, data);

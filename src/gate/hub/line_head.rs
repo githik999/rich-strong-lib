@@ -12,8 +12,6 @@ pub enum Status {
     Dead,
 }
 
-
-
 #[derive(Debug)]
 pub struct  Line {
     id:u64,
@@ -28,6 +26,7 @@ pub struct  Line {
     read_close:bool,
     write_close:bool,
     born:u128,
+    last_send:u128
 }
 
 pub enum LineAge {
@@ -92,7 +91,7 @@ impl Line {
         Log::new(kind,&id);
         Log::add(format!("{:?}",stream), kind, &id);
         Line{ id,stream,kind,partner_id:0,status:Baby,queue:Vec::new(),stage:0,traffic:0,
-            host:String::from(""),read_close:false,write_close:false,born:Time::now() }
+            host:String::from(""),read_close:false,write_close:false,born:Time::now(),last_send:0 }
     }
 
     pub fn set_partner_id(&mut self,id:u64) {
@@ -105,6 +104,10 @@ impl Line {
         if v <= self.status { return; }
         self.log(format!("s|{:?}",v));
         self.status = v;
+    }
+
+    pub fn set_last_send(&mut self,t:u128) {
+        self.last_send = t
     }
 
     pub fn read_closed(&mut self) {
@@ -147,11 +150,12 @@ impl Line {
             Ok(n) => { 
                 self.log(format!("w|{}",n));
                 self.add_traffic(n);
+                self.set_last_send(Time::now());
                 self.shrink_queue(n);
             }
             Err(err) => {
+                self.log(format!("write error|{:?}",err));
                 if err.kind() != ErrorKind::WouldBlock {
-                    self.log(format!("write error|{:?}",err));
                     self.go_die();
                 }
             }
