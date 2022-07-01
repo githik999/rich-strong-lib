@@ -13,7 +13,6 @@ mod line_process;
 impl Hub {
     pub fn process(&mut self,event:&Event,p:&Poll) {
         let k = &event.token();
-        Log::add(format!("{:?}",event), self.get_line(k).kind(), &LogTag::Event);        
         if self.get_line(k).is_dead() {
             self.get_line(k).event_after_die(event);
             return;
