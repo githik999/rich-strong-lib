@@ -37,7 +37,7 @@ impl Server {
 }
 
 impl Server {
-    fn heart_beat(&self) {
-        //Log::
+    fn heart_beat(&mut self) {
+        self.gate.hub.check(&self.p);
     }
 }

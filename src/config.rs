@@ -11,16 +11,15 @@ static mut WORKING_CALLER: u8 = 0;
 static mut PROXY_SERVER_ADDR : String = String::new();
 
 impl Config {
-    pub fn init() -> (String,String) {
+    pub fn init() -> String {
         Config::set_panic_hook();
         let r = Config::load();
         let app = r.get("common","app").unwrap();
-        let http = r.get("common","http").unwrap();
         let write_log = r.getbool("common", "write_log").unwrap().unwrap();
         if write_log {
             Config::turn_on()
         }
-        (app,http)
+        app
     }
 
     pub fn init_client_side_setting() {

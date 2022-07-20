@@ -57,6 +57,6 @@ impl Log {
     }
 
     fn heart_beat_file() -> String {
-        String::from("log/panic.log")
+        String::from("log/heart_beat.log")
     }
 }

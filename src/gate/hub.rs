@@ -47,6 +47,13 @@ impl Hub {
         }
 
     }
+
+    pub fn check(&mut self,p:&Poll) {
+        self.old_check();
+        self.dead_check();
+        self.health_check(p);
+    }
+    
 }
 
 //[Private]
@@ -63,7 +70,6 @@ impl Hub {
 
         match line.kind() {
             LineType::Fox => {self.process_fox(k,buf,p);}
-            //LineType::Http => {self.process_http(k,buf);}
             LineType::Operator => {self.process_operator(k,buf,p);}
             _ => { self.tunnel(pid, buf); }
         }
@@ -78,7 +84,6 @@ impl Hub {
         match line.fox_data(buf) {
             Some(data) => {
                 if caller_id == 0 {
-                    self.check(p);
                     caller_id = self.idle_caller();
                     self.get_mut_line_by_id(caller_id).set_partner_id(fox_id);
                     self.get_mut_line_by_id(caller_id).set_host(host, fox_id);
@@ -136,9 +141,5 @@ impl Hub {
         line.send();
     }
 
-    fn check(&mut self,p:&Poll) {
-        self.old_check();
-        self.dead_check();
-        self.health_check(p);
-    }
+    
 }
