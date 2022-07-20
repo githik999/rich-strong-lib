@@ -4,7 +4,7 @@ use mio::{Poll, net::TcpStream};
 
 use crate::{time::Time, log::Log, config::Config, head::{LineType, LogTag}};
 
-use super::{hub_head::Hub, hub::line_head::{LineAge,Status::{Baby,Error,Dead}}};
+use super::{hub_head::Hub, hub::line_head::{LineAge,Status::{Working,Dead}}};
 
 ///Caller Hub
 
@@ -17,7 +17,6 @@ impl Hub {
 
     pub fn old_check(&mut self) {
         let limit = (Config::minimum_worker()/2).into();
-        let mut error = Vec::new();
         let mut fail = Vec::new();
         let mut old = Vec::new();
         let mut young = VecDeque::new();
@@ -29,24 +28,15 @@ impl Hub {
             match self.age(id, t) {
                 LineAge::Young => { young.push_back(id); }
                 LineAge::Fail => { fail.push(id); }
-                LineAge::Error => { error.push(id); }
                 LineAge::Old => { old.push(id); }
                 _ => {}
             }
         }
 
-        Log::add(format!("young:{}|fail:{}|error:{}|old:{}|dead:{}",young.len(),error.len(),fail.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Default);
+        Log::add(format!("young:{}|fail:{}|old:{}|dead:{}",young.len(),fail.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Default);
         
-        if error.len() > limit {
-            Log::heart_beat("tcp errors with proxy server".to_string());
-        }
-
         if fail.len() > limit {
-            Log::heart_beat("connection to proxy server is bad".to_string());
-        }
-
-        for id in error {
-            self.kill_line_by_id(id);
+            Log::heart_beat("tcp with proxy server fail".to_string());
         }
 
         for id in fail {
@@ -77,11 +67,11 @@ impl Hub {
     fn age(&self,id:u64,now:u128) -> LineAge {
         let v = self.get_line_by_id(id);
         if v.kind() != LineType::Caller { return LineAge::Defalut; }
-        if v.status() == Error { return LineAge::Error; }
         if v.status() == Dead { return LineAge::Defalut; }
+        
         let age = now - v.born_time();
         
-        if v.status() == Baby && age > 5*1000 { 
+        if v.status() != Working && age > 5*1000 { 
             return LineAge::Fail;
         }
 
