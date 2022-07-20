@@ -12,6 +12,7 @@ impl Log {
         match fs::remove_dir_all(path) {
             _ => { fs::create_dir(path).unwrap(); }
         }
+        File::create(Log::event_file()).unwrap();
         File::create(Log::heart_beat_file()).unwrap();
     }
 
@@ -47,6 +48,12 @@ impl Log {
         let mut f = File::options().append(true).open(Log::heart_beat_file()).unwrap();
         f.write(s.as_bytes()).unwrap();
     }
+
+    pub fn event(str:String) {
+        let s = format!("{}|{}\n",Time::now(),str);
+        let mut f = File::options().append(true).open(Log::event_file()).unwrap();
+        f.write(s.as_bytes()).unwrap();
+    }
     
     
 }
@@ -58,5 +65,9 @@ impl Log {
 
     fn heart_beat_file() -> String {
         String::from("log/heart_beat.log")
+    }
+
+    fn event_file() -> String {
+        String::from("log/event.log")
     }
 }

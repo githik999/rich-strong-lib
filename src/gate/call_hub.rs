@@ -16,6 +16,7 @@ impl Hub {
     }
 
     pub fn old_check(&mut self) {
+        let mut fail = Vec::new();
         let mut old = Vec::new();
         let mut young = VecDeque::new();
 
@@ -25,12 +26,21 @@ impl Hub {
             let id = *id;
             match self.age(id, t) {
                 LineAge::Young => { young.push_back(id); }
+                LineAge::Fail => { fail.push(id); }
                 LineAge::Old => { old.push(id); }
                 _ => {}
             }
         }
 
-        Log::add(format!("young:{}|old:{}|dead:{}",young.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Default);
+        Log::add(format!("young:{}|fail:{}|old:{}|dead:{}",young.len(),fail.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Default);
+        
+        if fail.len() > (Config::minimum_worker()/2).into() {
+            Log::heart_beat("connection to proxy server is bad".to_string());
+        }
+
+        for id in fail {
+            self.kill_line_by_id(id);
+        }
 
         for id in old {
             self.kill_line_by_id(id);
@@ -59,8 +69,8 @@ impl Hub {
         if v.status() == Dead { return LineAge::Defalut; }
         let age = now - v.born_time();
         
-        if age > 5*1000 && v.status() == Baby { 
-            return LineAge::Old;
+        if v.status() == Baby && age > 5*1000 { 
+            return LineAge::Fail;
         }
 
         if age > 3*60*1000 { 

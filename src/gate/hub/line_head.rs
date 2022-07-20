@@ -31,6 +31,7 @@ pub struct  Line {
 
 pub enum LineAge {
     Young,
+    Fail,
     Old,
     Defalut,
 }
