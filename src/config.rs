@@ -30,7 +30,6 @@ impl Config {
         Config::set_minimum_worker(n);
         Config::set_proxy_server_addr(addr);
     }
-
     
 }
 
