@@ -16,6 +16,8 @@ impl Hub {
     }
 
     pub fn old_check(&mut self) {
+        let limit = (Config::minimum_worker()/2).into();
+        let mut error = Vec::new();
         let mut fail = Vec::new();
         let mut old = Vec::new();
         let mut young = VecDeque::new();
@@ -27,14 +29,19 @@ impl Hub {
             match self.age(id, t) {
                 LineAge::Young => { young.push_back(id); }
                 LineAge::Fail => { fail.push(id); }
+                LineAge::Error => { error.push(id); }
                 LineAge::Old => { old.push(id); }
                 _ => {}
             }
         }
 
-        Log::add(format!("young:{}|fail:{}|old:{}|dead:{}",young.len(),fail.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Default);
+        Log::add(format!("young:{}|fail:{}|error:{}|old:{}|dead:{}",young.len(),error.len(),fail.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Default);
         
-        if fail.len() > (Config::minimum_worker()/2).into() {
+        if error.len() > limit {
+            Log::heart_beat("tcp errors with proxy server".to_string());
+        }
+
+        if fail.len() > limit {
             Log::heart_beat("connection to proxy server is bad".to_string());
         }
 

@@ -9,6 +9,7 @@ use Status::{Baby,Dead};
 pub enum Status {
     Baby,
     Working,
+    Error,
     Dead,
 }
 
@@ -32,6 +33,7 @@ pub struct  Line {
 pub enum LineAge {
     Young,
     Fail,
+    Error,
     Old,
     Defalut,
 }

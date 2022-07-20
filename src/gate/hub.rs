@@ -20,7 +20,6 @@ impl Hub {
 
         if event.is_error() {
             self.get_mut_line(k).on_error();
-            self.kill_both(k);
             return;
         }
 
