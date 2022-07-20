@@ -14,7 +14,7 @@ impl Tcp {
                 return Some(it.next().unwrap());
             }
             Err(err) => {
-                Log::error(format!("dns fail|{}|{}",host,err));
+                Log::heart_beat(format!("dns fail|{}|{}",host,err));
                 None
             }
         }
@@ -28,7 +28,7 @@ impl Tcp {
                         return Some(socket)
                     }
                     Err(err) => {
-                        Log::error(format!("connect fail|{}|{}",host,err));
+                        Log::heart_beat(format!("connect fail|{}|{}",host,err));
                     }
                 }
             }

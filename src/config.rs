@@ -1,5 +1,3 @@
-use std::{fs::File, io::Write};
-
 use backtrace::Backtrace;
 use configparser::ini::Ini;
 
@@ -46,9 +44,7 @@ impl Config {
 
     fn set_panic_hook() {
         std::panic::set_hook(Box::new(|_| {
-            let bt = Backtrace::new();
-            let mut f = File::options().append(true).open(Log::panic_file()).unwrap();
-            f.write(format!("{:?}",bt).as_bytes()).unwrap();
+            Log::heart_beat(format!("{:?}",Backtrace::new()));
         }));
     }
 }

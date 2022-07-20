@@ -31,7 +31,7 @@ impl Gate {
             }
 
             Err(err) => {
-                Log::error(format!("{}|{:?}",addr,err));
+                Log::heart_beat(format!("{}|{:?}",addr,err));
                 panic!();
             }
         }
