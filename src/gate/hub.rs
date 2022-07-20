@@ -53,7 +53,7 @@ impl Hub {
         self.dead_check();
         self.health_check(p);
     }
-    
+
 }
 
 //[Private]
@@ -69,13 +69,13 @@ impl Hub {
         }
 
         match line.kind() {
-            LineType::Fox => {self.process_fox(k,buf,p);}
+            LineType::Fox => {self.process_fox(k,buf);}
             LineType::Operator => {self.process_operator(k,buf,p);}
             _ => { self.tunnel(pid, buf); }
         }
     }
 
-    fn process_fox(&mut self,k:&Token,buf:Vec<u8>,p:&Poll) {
+    fn process_fox(&mut self,k:&Token,buf:Vec<u8>) {
         let line = self.get_mut_line(k);
         let fox_id = line.id();
         let host = line.host().clone();
