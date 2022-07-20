@@ -4,7 +4,7 @@ use mio::{Poll, net::TcpStream};
 
 use crate::{time::Time, log::Log, config::Config, head::{LineType, LogTag}};
 
-use super::{hub_head::Hub, hub::line_head::{LineAge,Status::Dead}};
+use super::{hub_head::Hub, hub::line_head::{LineAge,Status::{Baby,Dead}}};
 
 ///Caller Hub
 
@@ -58,10 +58,15 @@ impl Hub {
         if v.kind() != LineType::Caller { return LineAge::Defalut; }
         if v.status() == Dead { return LineAge::Defalut; }
         let age = now - v.born_time();
-        if age < 3*60*1000 { 
-            return LineAge::Young;
+        
+        if age > 5*1000 && v.status() == Baby { 
+            return LineAge::Old;
         }
-        LineAge::Old
+
+        if age > 3*60*1000 { 
+            return LineAge::Old;
+        }
+        LineAge::Young
     }
 
     fn add_caller(&mut self,n:u8,p:&Poll) {
