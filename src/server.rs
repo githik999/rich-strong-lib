@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use mio::{Poll, Events};
 
-use crate::{gate::Gate, log::{Log, self}, head::LineType};
+use crate::{gate::Gate, log::Log, head::LineType};
 
 pub struct Server {
     p:Poll,
