@@ -30,7 +30,7 @@ impl Hub {
             }
         }
 
-        Log::add(format!("young:{}|old:{}|dead:{}",young.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Unique);
+        Log::add(format!("young:{}|old:{}|dead:{}",young.len(),old.len(),self.dead_count()), LineType::Caller, &LogTag::Default);
 
         for id in old {
             self.kill_line_by_id(id);
@@ -42,7 +42,7 @@ impl Hub {
     pub fn health_check(&mut self,p:&Poll) {
         let need = Config::minimum_worker();
         let have:u8 = self.idle_caller_count();
-        Log::add(format!("have:{}|need:{}",have,need), LineType::Caller, &LogTag::Unique);
+        Log::add(format!("have:{}|need:{}",have,need), LineType::Caller, &LogTag::Default);
         if have < need {
             self.add_caller(need, p);
         }

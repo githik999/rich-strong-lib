@@ -1,6 +1,8 @@
+use std::time::Duration;
+
 use mio::{Poll, Events};
 
-use crate::{gate::Gate, log::Log, head::LineType};
+use crate::{gate::Gate, log::{Log, self}, head::LineType};
 
 pub struct Server {
     p:Poll,
@@ -20,11 +22,11 @@ impl Server {
 
     pub fn start(&mut self) {
         loop {
-            self.p.poll(&mut self.events, None).unwrap();
+            self.p.poll(&mut self.events, Some(Duration::from_millis(1000))).unwrap();
             for event in self.events.iter() {
                 self.gate.process(event,&self.p);
             }
-            //self.gate.hub.update_working_count();
+            self.heart_beat();
         }
     }
 
@@ -32,4 +34,10 @@ impl Server {
         self.gate.hub.init_callers(&self.p);
     }
 
+}
+
+impl Server {
+    fn heart_beat(&self) {
+        //Log::
+    }
 }

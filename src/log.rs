@@ -43,9 +43,7 @@ impl Log {
         f.write(s.as_bytes()).unwrap();
     }
 
-    pub fn panic_file() -> String {
-        String::from("log/panic.log")
-    }
+    
 
     pub fn error(str:String) {
         let s = format!("{}|{}\n",Time::now(),str);
@@ -53,14 +51,26 @@ impl Log {
         f.write(s.as_bytes()).unwrap();
     }
     
-    pub fn error_file() -> String {
-        String::from("log/error.log")
-    }
+    
     
 }
 
 impl Log {
     fn get_path<T: Debug>(kind:LineType,name:&T) -> String {
         format!("log/{:?}/{:?}.log",kind,name)
+    }
+}
+
+impl Log {
+    pub fn error_file() -> String {
+        String::from("log/error.log")
+    }
+
+    pub fn panic_file() -> String {
+        String::from("log/panic.log")
+    }
+
+    pub fn heart_beat_file() -> String {
+        String::from("log/heart_beat.log")
     }
 }

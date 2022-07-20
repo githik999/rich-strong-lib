@@ -7,16 +7,13 @@ pub enum LineType {
     Caller,
     Operator,
     Spider,
-    Http,
-    Defalut,
 }
 
 #[derive(Debug,Sequence)]
 pub enum LogTag {
-    Unique,
+    Default,
     Event,
     Establish,
     GoodBye,
     Unexpected,
-    Default,
 }
