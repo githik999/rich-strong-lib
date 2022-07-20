@@ -4,7 +4,7 @@ use mio::{Poll, net::TcpStream};
 
 use crate::{time::Time, log::Log, config::Config, head::{LineType, LogTag}};
 
-use super::{hub_head::Hub, hub::line_head::{LineAge,Status::{Baby,Dead}}};
+use super::{hub_head::Hub, hub::line_head::{LineAge,Status::{Baby,Error,Dead}}};
 
 ///Caller Hub
 
@@ -45,6 +45,10 @@ impl Hub {
             Log::heart_beat("connection to proxy server is bad".to_string());
         }
 
+        for id in error {
+            self.kill_line_by_id(id);
+        }
+
         for id in fail {
             self.kill_line_by_id(id);
         }
@@ -73,6 +77,7 @@ impl Hub {
     fn age(&self,id:u64,now:u128) -> LineAge {
         let v = self.get_line_by_id(id);
         if v.kind() != LineType::Caller { return LineAge::Defalut; }
+        if v.status() == Error { return LineAge::Error; }
         if v.status() == Dead { return LineAge::Defalut; }
         let age = now - v.born_time();
         
